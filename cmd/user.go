@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"github.com/wtysos11/goAgenda/entity"
 	"github.com/spf13/cobra"
-	"encoding/json"
 )
 
 // userCmd represents the user command
@@ -59,7 +58,16 @@ to quickly create a Cobra application.`,
 				}
 			}
 		}
+		
+		myuser,err := entity.ReadUserFromFile("user.txt");
+		if  err==nil{
+			fmt.Println(myuser)
+		} else{
+			fmt.Println(err)
+		}
 
+		entity.WriteUserToFile("test.txt",myuser)
+		/*
 		var myuser []entity.User
 		fmt.Println("JSON decode to structure test1")
 		jsonStr := `[{"username":"wtysos11","password":"123456","email":"wtysos11"},{"username":"wtysos11","password":"123456","email":"wtysos11"}]`
@@ -68,7 +76,7 @@ to quickly create a Cobra application.`,
 		
 		if data,err:=json.Marshal(myuser);err==nil{
 			fmt.Printf("%s\n",data)
-		}
+		}*/
 
 	},
 }

@@ -1,5 +1,11 @@
 package entity
 
+import(
+	"io/ioutil"
+	"encoding/json"
+	"fmt"
+	"os"
+)
 
 type User struct{
 	Username string `json:"username"`
@@ -7,12 +13,30 @@ type User struct{
     Email string `json:"email"`
     Telphone string `json:"telphone"`
 }
-/* 函数名：JSONDecode
- * 参数： string json，表示收到的json字符串
- * 返回值： error
- * 根据所给的JSON修改执行的User的值
+/* 函数名：
+ * 参数： 
+ * 返回值： users数组，error
+ * 
  */
- /*
-func (user User) JSONDecode (jsonStr string) err{
-	return json.Unmarshal([]byte(jsonStr),user)
-}*/
+ 
+func ReadUserFromFile (filePath string) ([]User,error) {
+	var users []User
+	fmt.Println("In reading file")
+	str,err := ioutil.ReadFile(filePath)
+	if err!=nil {
+		return users,err
+	}
+	jsonStr := string(str)
+	fmt.Printf("%s\n",jsonStr)
+	
+	json.Unmarshal([]byte(jsonStr),&users)
+	return users,nil
+}
+
+func WriteUserToFile (filePath string, users []User) error{
+	if data,err:=json.Marshal(users);err==nil{
+		return ioutil.WriteFile(filePath,[]byte(data),os.ModeAppend)
+	} else{
+		return err
+	}
+}

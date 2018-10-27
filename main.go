@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/wtysos11/cobratest/cmd"
+import "github.com/wtysos11/goAgenda/cmd"
 
 func main() {
 	cmd.Execute()

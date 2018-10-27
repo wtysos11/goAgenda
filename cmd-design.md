@@ -1,3 +1,4 @@
+[TOC]
 # Agenda设计文档
 
 ## 需求
@@ -134,3 +135,208 @@
 #### agenda meeting clear
 
 清空会议，已经登录的用户可以清空自己发起的所有会议安排
+
+## 结构定义
+
+### 用户(user)
+位置：`entity/useroper.go`中
+作用：定义用户所需要的结构，以及相关的操作函数
+```go
+type User struct{
+    Username string
+    Password string
+    Email string
+    Telphone string
+}
+```
+
+### 会议(conference)
+位置：`entity/conference.go`中
+作用：定义会议所需要的结构，以及相关的操作函数
+```go
+type Meeting struct{
+    StartTime string
+    EndTime string
+    Title string
+    UserList []User
+}
+```
+
+# 参考知识与备份
+
+如果有可能经常用到的、比较重要的而且容易忘记的知识可以放在这里。
+
+## JSON读写学习
+### 编码
+代码来自于网络
+结构体转JSON代码：
+```go
+package main
+
+import (
+    "encoding/json"
+    "fmt"
+)
+
+type DebugInfo struct {
+    Level  string `json:"level,omitempty"` // Level解析为level,忽略空值
+    Msg    string `json:"message"`         // Msg解析为message
+    Author string `json:"-"`               // 忽略Author，或者设为未导出字段
+}
+
+
+func main() {
+
+    dbgInfs := []DebugInfo{
+        DebugInfo{"debug", `File: "test.txt" Not Found`, "Cynhard"},
+        DebugInfo{"", "Logic error", "Gopher"},
+    }
+
+    if data, err := json.Marshal(dbgInfs); err == nil {
+        fmt.Printf("%s\n", data)
+    }
+}
+```
+
+自定义结构对MarshalJSON()接口的实现
+```go
+package main
+
+import (
+    "encoding/json"
+    "fmt"
+)
+
+type Point struct{ X, Y int }
+
+func (pt Point)MarshalJSON() ([]byte, error) {
+    return []byte(fmt.Sprintf(`{"X":%d,"Y":%d}`, pt.X, pt.Y)), nil
+}
+
+func main() {
+    if data, err := json.Marshal(Point{50, 50}); err == nil {
+        fmt.Printf("%s\n", data)
+    }
+}
+```
+
+### 解码
+解码主要使用的是JSON包的函数`func Unmarshal(data []byte,v interface{}) error`
+```go
+package main
+
+import (
+    "encoding/json"
+    "fmt"
+)
+
+func main() {
+    data := `[{"Level":"debug","Msg":"File: \"test.txt\" Not Found"},` +
+        `{"Level":"","Msg":"Logic error"}]`
+
+    var dbgInfos []map[string]string
+    json.Unmarshal([]byte(data), &dbgInfos)
+
+    fmt.Println(dbgInfos)
+}
+```
+
+#### JSON转结构体
+与编码一样，JSON是通过反射机制来实现解码的，所以结构必须导出所转换的字段，不导出的字段不会被JSON包解析。另外解析的时候不区分大小写。
+
+```go
+package main
+
+import (
+    "encoding/json"
+    "fmt"
+)
+
+type DebugInfo struct {
+    Level string
+    Msg string
+    author string  // 未导出字段不会被json解析
+}
+
+func (dbgInfo DebugInfo) String() string {
+    return fmt.Sprintf("{Level: %s, Msg: %s}", dbgInfo.Level, dbgInfo.Msg)
+}
+
+func main() {
+    data := `[{"level":"debug","msg":"File Not Found","author":"Cynhard"},` +
+        `{"level":"","msg":"Logic error","author":"Gopher"}]`
+
+    var dbgInfos []DebugInfo
+    json.Unmarshal([]byte(data), &dbgInfos)
+
+    fmt.Println(dbgInfos)
+}
+```
+
+结构体也可以与编码的时候一样设置结构体字段标签
+
+#### 转换接口
+和编码的时候类似，解码使用接口Unmarshaler，需要实现`UnmarshalJSON([]byte) error`
+
+下面这个接口没有实现解码算法，只是将参数打印出来
+```go
+package main
+
+import (
+    "encoding/json"
+    "fmt"
+)
+
+type Point struct{ X, Y int }
+
+func (Point) UnmarshalJSON(data []byte) error {
+    fmt.Println(string(data))
+    return nil
+}
+
+func main() {
+    data := `{"X":80,"Y":80}`
+    var pt Point
+    json.Unmarshal([]byte(data), &pt)
+}
+```
+
+## 文件读写
+使用ioutil的ReadFile和WriteFile，并使用stirng()等函数进行类型转换，例程：
+```go
+package main
+
+import(
+    "fmt"
+    "io/ioutil"
+)
+
+func main() {
+    //read
+    b, err := ioutil.ReadFile("test.log")
+    if err != nil {
+        fmt.Print(err)
+    }
+    fmt.Println(b)
+    str := string(b)
+    fmt.Println(str)
+    //write
+    d1 := []byte("hello\ngo\n")
+    err := ioutil.WriteFile("test.txt", d1, 0644)
+    check(err)
+}
+```
+
+## 实例
+使用user进行的测试（已经通过）
+```go
+	var myuser []entity.User
+	fmt.Println("JSON decode to structure test1")
+	jsonStr := `[{"username":"wtysos11""password":"123456","email":"wtysos11"}{"username":"wtysos11","password":"123456""email":"wtysos11"}]`
+	json.Unmarshal([]byte(jsonStr),&myuser)
+	fmt.Println(myuser)
+	
+	if data,err:=json.Marshal(myuser);err==nil{
+		fmt.Printf("%s\n",data)
+	}
+```

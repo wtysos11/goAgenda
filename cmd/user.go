@@ -16,8 +16,9 @@ package cmd
 
 import (
 	"fmt"
-
+	"github.com/wtysos11/goAgenda/entity"
 	"github.com/spf13/cobra"
+	"encoding/json"
 )
 
 // userCmd represents the user command
@@ -58,6 +59,17 @@ to quickly create a Cobra application.`,
 				}
 			}
 		}
+
+		var myuser []entity.User
+		fmt.Println("JSON decode to structure test1")
+		jsonStr := `[{"username":"wtysos11","password":"123456","email":"wtysos11"},{"username":"wtysos11","password":"123456","email":"wtysos11"}]`
+		json.Unmarshal([]byte(jsonStr),&myuser)
+		fmt.Println(myuser)
+		
+		if data,err:=json.Marshal(myuser);err==nil{
+			fmt.Printf("%s\n",data)
+		}
+
 	},
 }
 

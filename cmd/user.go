@@ -20,13 +20,26 @@ import (
 	"os"
 	. "github.com/wtysos11/goAgenda/entity"
 	"github.com/spf13/cobra"
+	"errors"
 )
 
 const userPlace = "user.txt"
 const cachePlace = "cache.txt"
 
-//legal check, don't implement yet
+//only check username repeat now
 func userLegalCheck(userInfo []User,username string, password string,email string ,telphone string) (bool,error){
+	for _,user := range userInfo {
+		if user.Username == username{
+			return false,errors.New("Repeat Username")
+		}
+	}
+	if len(password) == 0{
+		return false,errors.New("Must have a password")
+	} else if len(email)==0 {
+		return false,errors.New("Must have an email")
+	} else if len(telphone)==0 {
+		return false,errors.New("Must have a telphone")
+	}
 	return true,nil
 }
 
@@ -85,16 +98,6 @@ to quickly create a Cobra application.`,
 		email, _ := cmd.Flags().GetString("email")
 		telphone,_ := cmd.Flags().GetString("telphone")
 
-		/*
-		fmt.Println("In userCmd begin Flag test.")
-		fmt.Println("register called by " + username)
-		fmt.Println("register's password is "+password)
-		fmt.Println("register's email is "+email)
-		fmt.Println("register's telphone is "+telphone)
-		fmt.Println("Flag test over\n")
-*/
-
-		//
 		if len(args)>0 {
 			switch (args[0]){
 				case "register":{
@@ -125,6 +128,11 @@ to quickly create a Cobra application.`,
 						return
 					}
 					//validate username and password
+					if len(username) == 0 || len(password) == 0 {
+						fmt.Println("Must have a username and a password")
+						return
+					}
+
 					pass := false
 					for _,user := range userInfo{
 						if user.Username == username && user.Password == password{
@@ -194,7 +202,12 @@ to quickly create a Cobra application.`,
 					//if pass, delete this user and logout
 					for i,user := range userInfo{
 						if loginUsername == user.Username{
-							userInfo = append(userInfo[:i],userInfo[i+1:]...)
+							if i+1 < len(userInfo){
+								userInfo = append(userInfo[:i],userInfo[i+1:]...)
+							} else{
+								userInfo = userInfo[:i]
+							}
+							
 							break
 						}
 					}
@@ -208,17 +221,6 @@ to quickly create a Cobra application.`,
 			}
 		}
 		
-		/*
-		fmt.Println("\nio reading and writing test.")
-		myuser,err := entity.ReadUserFromFile("user.txt");
-		if  err==nil{
-			fmt.Println(myuser)
-		} else{
-			fmt.Println(err)
-		}
-		entity.WriteUserToFile("test.txt",myuser)
-*/
-
 	},
 }
 

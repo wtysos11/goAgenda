@@ -18,12 +18,88 @@ import (
 	"fmt"
 	. "github.com/wtysos11/goAgenda/entity"
 	"github.com/spf13/cobra"
+	"errors"
 )
 
 const meetingPlace = "meeting.txt"
+//check whether all the users are available and have time to attend this meeting
+func userTimeCheck(userInfo []User,meetingInfo []Meeting,startTime AgendaTime, endTime AgendaTime,participants []string) error{
+	//first, check all participants are available in userInfo
+	for _,p := range participants {
+		pass := false
+		for _,u := range userInfo{
+			if u.Username == p{
+				pass = true
+				break
+			}
+		}
+		if(!pass){
+			return errors.New("Participants have illegal participant:"+p)
+		}
+	}
+	//for all meetings, if their userlist have participant, check whether this meeting have conflicts.
+	for _,m := range meetingInfo{
+		inMeeting := false
+		var involveParticipant string
+		for _,user := range m.UserList{
+			for _,p := range participants {
+				if user == p{
+					inMeeting = true
+					involveParticipant = p
+					break
+				}
+			}
+		}
+		if !inMeeting{
+			continue
+		}
+
+		meetingStartTime,_ := String2Time(m.StartTime)
+		meetingEndTime,_ := String2Time(m.EndTime)
+		if !(CompareTime(endTime,meetingStartTime)<0 && CompareTime(startTime,meetingEndTime)>0){
+			return errors.New("For participants "+involveParticipant+". Meeting "+m.Title+" have conflicts.") 
+		}
+	}
+	return nil
+}
 
 //legal check, don't implement yet
 func meetingLegalCheck(meetingInfo []Meeting,startTime string, endTime string,title string ,participants []string) (bool,error){
+	sTime,tserr := String2Time(startTime)
+	eTime,teerr := String2Time(endTime)
+	if tserr!=nil {
+		return false,tserr
+	} else if teerr != nil{
+		return false,teerr
+	}
+
+	if startTimeErr := TimeLegalCheck(sTime); startTimeErr != nil{
+		return false,startTimeErr
+	} 
+	if endTimeErr := TimeLegalCheck(eTime); endTimeErr != nil{
+		return false,endTimeErr
+	}
+
+	if CompareTime(sTime,eTime)>=0 {
+		return false,errors.New("start time should smaller than end time (equal is not allowed)")
+	}
+
+	for _,m := range meetingInfo {
+		if m.Title == title{
+			return false,errors.New("Repeat title")
+		}
+	}
+
+	//check participants
+	if userInfo,userReadingerr := ReadUserFromFile(userPlace);userReadingerr!=nil {
+		fmt.Println(userReadingerr)
+		return false,userReadingerr
+	} else{
+		if userCheckError := userTimeCheck(userInfo,meetingInfo,sTime,eTime,participants);userCheckError != nil{
+			return false,userCheckError
+		}
+	}
+
 	return true,nil
 }
 
@@ -40,6 +116,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		//all meeting operation need a login status
 		if login,err:=checklogin(); err!=nil{
 			fmt.Println(err)
 			return
@@ -47,12 +124,14 @@ to quickly create a Cobra application.`,
 			fmt.Println("Please login first")
 			return
 		}
+		//get login username, for founder of the conference and some operations
 		loginUsername,loginErr := getLoginUsername()
 		if loginErr !=nil {
 			fmt.Println(loginErr)
 			return
 		}
 
+		//get store meeting data in JSON format
 		meetingInfo,meetingReadingerr := ReadMeetingFromFile(meetingPlace)
 		if meetingReadingerr!=nil {
 			fmt.Println(meetingReadingerr)
@@ -64,12 +143,13 @@ to quickly create a Cobra application.`,
 		title,_ := cmd.Flags().GetString("title")
 		participants,_ := cmd.Flags().GetStringArray("participant")
 
+		/*
 		fmt.Println("flags test.")
 		fmt.Println(startTime)
 		fmt.Println(endTime)
 		fmt.Println(title)
 		fmt.Println(participants)
-
+*/
 		if len(args)>0{
 			switch (args[0]){
 				case "create":{
@@ -249,6 +329,8 @@ to quickly create a Cobra application.`,
 					fmt.Println("meeting clear")
 				}
 			}
+		} else{
+			fmt.Println("Need some command.")
 		}
 	},
 }

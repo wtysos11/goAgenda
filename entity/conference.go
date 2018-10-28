@@ -112,3 +112,31 @@ func CompareTime (time1 AgendaTime, time2 AgendaTime) int{
         }
     }
 }
+
+
+
+func TimeLegalCheck(agendaTime AgendaTime) error {
+    dayCheck := [...]int{0,31,0,31,30,31,30,31,31,30,31,30,31}
+    isLeap := false
+    if agendaTime.Year % 4 == 0 &&(agendaTime.Year % 100 !=0 || agendaTime.Year%400 == 0){
+        isLeap = true
+    }
+
+    if agendaTime.Year < 0{
+        return errors.New("Illegal year number")
+    } else if agendaTime.Month < 1 || agendaTime.Month > 12 {
+        return errors.New("Illegal month number")
+    } else if agendaTime.Month != 2 && (agendaTime.Day<1||agendaTime.Day>dayCheck[agendaTime.Month]){
+        return errors.New("Illegal day number")
+    } else if agendaTime.Month == 2 && ((isLeap && (agendaTime.Day<1||agendaTime.Day>29))||(!isLeap && (agendaTime.Day<1||agendaTime.Day>28))){
+        return errors.New("Illegal day number")
+    } else if agendaTime.Hour < 0 || agendaTime.Hour>23{
+        return errors.New("Illegal hour number (0-23 is permit)")
+    } else if agendaTime.Minute < 0 || agendaTime.Minute>59{
+        return errors.New("Illegal minute number")
+    } else if agendaTime.Second <0 || agendaTime.Second>59 {
+        return errors.New("Illegal second number")
+    } else{
+        return nil
+    }
+}

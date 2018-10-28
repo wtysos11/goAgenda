@@ -22,9 +22,7 @@ import (
 )
 
 const meetingPlace = "meeting.txt"
-//check whether all the users are available and have time to attend this meeting
-func userTimeCheck(userInfo []User,meetingInfo []Meeting,startTime AgendaTime, endTime AgendaTime,participants []string) error{
-	//first, check all participants are available in userInfo
+func userExistCheck(userInfo []User,participants []string) error{
 	for _,p := range participants {
 		pass := false
 		for _,u := range userInfo{
@@ -36,6 +34,15 @@ func userTimeCheck(userInfo []User,meetingInfo []Meeting,startTime AgendaTime, e
 		if(!pass){
 			return errors.New("Participants have illegal participant:"+p)
 		}
+	}
+	return nil
+}
+
+//check whether all the users are available and have time to attend this meeting
+func userTimeCheck(userInfo []User,meetingInfo []Meeting,startTime AgendaTime, endTime AgendaTime,participants []string) error{
+	//first, check all participants are available in userInfo
+	if existErr := userExistCheck(userInfo,participants); existErr!=nil{
+		return existErr
 	}
 	//for all meetings, if their userlist have participant, check whether this meeting have conflicts.
 	for _,m := range meetingInfo{
@@ -62,9 +69,26 @@ func userTimeCheck(userInfo []User,meetingInfo []Meeting,startTime AgendaTime, e
 	}
 	return nil
 }
+//receive member list that going to check. Current meetings time and the meeting list.
+//check whether these users are available
+func userAvailableCheck(member []string,meetingInfo []Meeting,sTime AgendaTime, eTime AgendaTime) error{
+	if userInfo,userReadingerr := ReadUserFromFile(userPlace);userReadingerr!=nil {
+		fmt.Println(userReadingerr)
+		return userReadingerr
+	} else{
+		if userCheckError := userTimeCheck(userInfo,meetingInfo,sTime,eTime,member);userCheckError != nil{
+			return userCheckError
+		}
+	}
+	return nil
+}
 
 //legal check, don't implement yet
 func meetingLegalCheck(meetingInfo []Meeting,startTime string, endTime string,title string ,participants []string) (bool,error){
+	if len(title)==0{
+		return false,errors.New("Meeting must have a title")
+	}
+
 	sTime,tserr := String2Time(startTime)
 	eTime,teerr := String2Time(endTime)
 	if tserr!=nil {
@@ -91,13 +115,8 @@ func meetingLegalCheck(meetingInfo []Meeting,startTime string, endTime string,ti
 	}
 
 	//check participants
-	if userInfo,userReadingerr := ReadUserFromFile(userPlace);userReadingerr!=nil {
-		fmt.Println(userReadingerr)
-		return false,userReadingerr
-	} else{
-		if userCheckError := userTimeCheck(userInfo,meetingInfo,sTime,eTime,participants);userCheckError != nil{
-			return false,userCheckError
-		}
+	if err:=userAvailableCheck(participants,meetingInfo,sTime,eTime); err!=nil{
+		return false,err
 	}
 
 	return true,nil
@@ -170,30 +189,61 @@ to quickly create a Cobra application.`,
 				case "addUser":{
 					fmt.Println("add user")
 					//check. Need title and at least one valiable participants(username correct and have time to attend)
+					//check arguments first
+					if len(participants) == 0{
+						fmt.Println("Add user command needs a user list.")
+						return
+					} else if len(title)==0 {
+						fmt.Println("Add user command needs title")
+					}
 
-					//find meeting
-					pass := false
-					for i , meeting := range meetingInfo{
-						if meeting.Title == title{
-							pass = true
-							//check whether participants have time
+					//check time valid and operate
+					var sTime,eTime AgendaTime
+					titleCheck := false
+					for i,m := range meetingInfo{
+						if m.Title == title{
+							titleCheck = true
+							sTime,_ = String2Time(m.StartTime)
+							eTime,_ = String2Time(m.EndTime)
 
+							//check time validation here
+							if timeErr := userAvailableCheck(participants,meetingInfo,sTime,eTime); timeErr!=nil{
+								fmt.Println(timeErr)
+								return
+							}
+							//if valid operate
 							meetingInfo[i].UserList = append(meetingInfo[i].UserList,participants...)
 							break
 						}
 					}
-
-					if !pass {
-						fmt.Println("Meeting add users failed.")
+					if !titleCheck{
+						fmt.Println("Invalid title.")
 						return
 					}
+					
 					WriteMeetingToFile(meetingPlace,meetingInfo)
 					fmt.Println("Meeting add users success")
 				}
 				case "deleteUser":{
 					fmt.Println("delete user")
 					//check. title and participants name
-
+					//check arguments first
+					if len(participants) == 0{
+						fmt.Println("Add user command needs a user list.")
+						return
+					} else if len(title)==0 {
+						fmt.Println("Add user command needs title")
+					}
+					//read userPlace file and validate participants
+					if userInfo,userReadingerr := ReadUserFromFile(userPlace);userReadingerr!=nil {
+						fmt.Println(userReadingerr)
+						return
+					} else{
+						if existErr:=userExistCheck(userInfo,participants); existErr!=nil{
+							fmt.Println(existErr)
+							return
+						}
+					}
 					//find meeting
 					pass := false
 					for i := 0; i < len(meetingInfo);i++ {
@@ -249,11 +299,37 @@ to quickly create a Cobra application.`,
 					fmt.Println("Meeting delete users success")
 				}
 				case "lookup":{
+					//transfer startTime and endTime
 					fmt.Println("meeting lookup")
+					if len(startTime) == 0 {
+						fmt.Println("Meeting lookup command needs a start time.")
+					} else if len(endTime) == 0{
+						fmt.Println("Meeting lookup command needs a end time.")
+					}
+					sTime,tserr := String2Time(startTime)
+					eTime,teerr := String2Time(endTime)
+					if tserr!=nil {
+						fmt.Println(tserr)
+						return
+					} else if teerr != nil{
+						fmt.Println(teerr)
+						return
+					}
+
+					fmt.Println("Meeting lookup:")
+					for _,m := range meetingInfo{
+						meetingStartTime,_ := String2Time(m.StartTime)
+						meetingEndTime,_ := String2Time(m.EndTime)
+						if (CompareTime(sTime,meetingStartTime)<0 && CompareTime(meetingStartTime,eTime)<0)||(CompareTime(sTime,meetingEndTime)<0 && CompareTime(meetingEndTime,eTime)<0){
+							fmt.Println("Meeting : "+ m.Title+" will start at  "+m.StartTime+"and end at "+m.EndTime+".")
+						}
+					}
 				}
 				case "cancel":{
 					fmt.Println("meeting cancel")
-
+					if len(title) == 0{
+						fmt.Println("Meeting cancel command needs a title.")
+					}
 					pass := false
 					for i := 0 ; i<len(meetingInfo) ; i++{
 						meeting := meetingInfo[i]

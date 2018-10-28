@@ -127,13 +127,59 @@ func meetingLegalCheck(meetingInfo []Meeting,startTime string, endTime string,ti
 // meetingCmd represents the meeting command
 var meetingCmd = &cobra.Command{
 	Use:   "meeting",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "operation on meeting",
+	Long: ` 
+	1.To add Participator of the meeting: 
+	
+	instruction:	add -p [Participator] -t [Title]
+		
+		[Participator] Participator's name
+		[Title] meeting's name
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	(attention:If the Participator cannot attend during the time, add fail.)
+
+	2. To remove a Participator of the meeting
+
+	instruction:	remove -p [Participator] -t [Title]
+
+		[Participator] Participator's name
+		[Title] meeting's name
+
+	3. To create a new meeting:
+	
+	instruction:	create -t [Title] -p [Participator] -s [StartTime] -e [EndTime]
+
+		[Title] the Title of the meeting
+		[Participator] the Participator of the meeting,the Participator can only attend one meeting during one meeting time
+		[StartTime] the StartTime of the meeting
+		[EndTime] the EndTime of the meeting 
+
+	4. To delete a meeting:
+
+	instruction:    deleteM -t [title]
+
+		[Title] the Title of the meeting
+	
+	5. To query a meeting:
+
+	instruction:	queryM -s [StartTime] -e [EndTime]
+
+		[StartTime] the StartTime of the meeting
+		[EndTime] the EndTime of the meeting
+
+	6. To quit a meeting:
+
+	instruction:	quit -t [title]
+
+		[Title] the Title of the meeting
+
+	(attention: if there is no participators in this meeting,the meeting will be deleted)
+		
+	7. To clear all meetings:
+	
+	instruction:	clear
+
+	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		//all meeting operation need a login status
 		if login,err:=checklogin(); err!=nil{

@@ -200,6 +200,7 @@ to quickly create a Cobra application.`,
 					}
 					//update the userPlace
 					WriteUserToFile(userPlace,userInfo)
+					userLogout()
 				}
 				default:{
 					fmt.Println("Unknown command")

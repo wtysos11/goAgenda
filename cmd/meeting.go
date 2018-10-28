@@ -107,6 +107,7 @@ to quickly create a Cobra application.`,
 						fmt.Println("Meeting add users failed.")
 						return
 					}
+					WriteMeetingToFile(meetingPlace,meetingInfo)
 					fmt.Println("Meeting add users success")
 				}
 				case "deleteUser":{
@@ -115,21 +116,46 @@ to quickly create a Cobra application.`,
 
 					//find meeting
 					pass := false
-					for i , meeting := range meetingInfo{
+					for i := 0; i < len(meetingInfo);i++ {
+						meeting := meetingInfo[i]
 						if meeting.Title == title{ //find the meeting
 							pass = true
 							//check whether participants have time
 
 							//delete participants from this meeting
 							//warning: may have bugs. Not sure
-							for j,user := range meeting.UserList{
-								for k,deleteUser := range participants{
+							for j := 0; j < len(meeting.UserList) ; j++ {
+								user := meeting.UserList[j]
+								for k:=0 ; k < len(participants) ; k++ {
+									deleteUser:=participants[k]
 									if user == deleteUser{
-										meetingInfo[i].UserList = append(meetingInfo[i].UserList[:j],meetingInfo[i].UserList[j+1:]...)
-										participants = append(participants[:k],participants[k+1:]...)
+										if j+1 < len(meetingInfo[i].UserList) {
+											meetingInfo[i].UserList = append(meetingInfo[i].UserList[:j],meetingInfo[i].UserList[j+1:]...)
+											j--;
+										} else {
+											meetingInfo[i].UserList = meetingInfo[i].UserList[:j]
+										}
+										
+										if k+1 < len(participants) {
+											participants = append(participants[:k],participants[k+1:]...)
+											k--;
+										} else {
+											participants = participants[:k]
+										}
+										
 										break
 									}
 								}
+							}
+							//if the delete operation make this meeting empty, clear the meeting
+							if len(meetingInfo[i].UserList) == 0 {
+								if i+1 < len(meetingInfo){
+									meetingInfo = append(meetingInfo[:i],meetingInfo[i+1:]...)
+									i--;
+								} else {
+									meetingInfo = meetingInfo[:i]
+								}
+								
 							}
 							break
 						}

@@ -1,6 +1,17 @@
 [TOC]
 # Agenda设计文档
 
+## 文件内容说明
+### user.txt
+内部以JSON的格式存放着user结构的数据。
+详情见`entity/useroper.go`
+
+### cache.txt
+存放着登录信息
+未登录：`logout`
+登录：`username(登录用户的用户名)`
+
+
 ## 需求
 
 子命令：help、register、cm
@@ -340,3 +351,9 @@ func main() {
 		fmt.Printf("%s\n",data)
 	}
 ```
+
+## Flag使用
+### StringArray使用
+使用`cmd.Flags().StringArray()`可以声明一个flag
+使用`cmd.Flags().GetStringArray()`可以取得这个数组
+对于数组而言只有重复使用标签才能够作为不同元素，比如`-a="ss" -a="tt"`，而同一个标签内都算作是一个字符窜

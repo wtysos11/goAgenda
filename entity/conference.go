@@ -7,3 +7,12 @@ type Meeting struct{
     Title string
     UserList []User
 }
+
+type time struct{
+    year int
+    month int
+    day int
+    hour int
+    minute int
+    second int
+}

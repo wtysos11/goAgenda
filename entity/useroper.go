@@ -21,7 +21,7 @@ type User struct{
  
 func ReadUserFromFile (filePath string) ([]User,error) {
 	var users []User
-	fmt.Println("In reading file")
+	fmt.Println("In reading user file")
 	str,err := ioutil.ReadFile(filePath)
 	if err!=nil {
 		return users,err

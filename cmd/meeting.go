@@ -16,9 +16,16 @@ package cmd
 
 import (
 	"fmt"
-	//"github.com/wtysos11/goAgenda/entity"
+	. "github.com/wtysos11/goAgenda/entity"
 	"github.com/spf13/cobra"
 )
+
+const meetingPlace = "meeting.txt"
+
+//legal check, don't implement yet
+func meetingLegalCheck(userinfo []User,username string, password string,email string ,telphone string) (bool,error){
+	return true,nil
+}
 
 // meetingCmd represents the meeting command
 var meetingCmd = &cobra.Command{
@@ -32,6 +39,17 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("meeting called")
+		startTime,_ := cmd.Flags().GetString("start")
+		endTime,_ := cmd.Flags().GetString("end")
+		title,_ := cmd.Flags().GetString("title")
+		participants,_ := cmd.Flags().GetStringArray("participant")
+
+		fmt.Println("flags test.")
+		fmt.Println(startTime)
+		fmt.Println(endTime)
+		fmt.Println(title)
+		fmt.Println(participants)
+
 		if len(args)>0{
 			switch (args[0]){
 				case "create":{
@@ -63,7 +81,10 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(meetingCmd)
-
+	meetingCmd.Flags().StringP("start","s","2018-10-28/16:01:23","Help message for start time")
+	meetingCmd.Flags().StringP("end","e","9999-12-31/23:59:59","Help message for end time")
+	meetingCmd.Flags().StringP("title","t","conference","Help message for meeting title")
+	meetingCmd.Flags().StringArrayP("participant","p",[]string{},"Help message for participant")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

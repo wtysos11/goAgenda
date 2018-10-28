@@ -22,11 +22,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const storePlace = "user.txt"
+const userPlace = "user.txt"
 const cachePlace = "cache.txt"
 
 //legal check, don't implement yet
-func legalCheck(userinfo []User,username string, password string,email string ,telphone string) (bool,error){
+func userLegalCheck(userinfo []User,username string, password string,email string ,telphone string) (bool,error){
 	return true,nil
 }
 
@@ -73,7 +73,7 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		//reading file from store place
-		userinfo,userReadingerr := ReadUserFromFile(storePlace)
+		userinfo,userReadingerr := ReadUserFromFile(userPlace)
 		if userReadingerr!=nil {
 			fmt.Println(userReadingerr)
 		}
@@ -99,7 +99,7 @@ to quickly create a Cobra application.`,
 				case "register":{
 					fmt.Println("register")
 					//legal check for username(unique),password,email,telphone
-					if pass,error := legalCheck(userinfo,username,password,email,telphone); pass == false {
+					if pass,error := userLegalCheck(userinfo,username,password,email,telphone); pass == false {
 						fmt.Println("Register Failed")
 						fmt.Println(error)
 						return
@@ -107,8 +107,8 @@ to quickly create a Cobra application.`,
 
 					//if pass legal check, add it to userFile
 					userinfo = append(userinfo,User{username,password,email,telphone})
-					//store the user file into storePlace
-					WriteUserToFile(storePlace,userinfo)
+					//store the user file into userPlace
+					WriteUserToFile(userPlace,userinfo)
 					fmt.Println("Register success")
 				}
 				case "login":{
@@ -195,8 +195,8 @@ to quickly create a Cobra application.`,
 							break
 						}
 					}
-					//update the storePlace
-					WriteUserToFile(storePlace,userinfo)
+					//update the userPlace
+					WriteUserToFile(userPlace,userinfo)
 				}
 				default:{
 					fmt.Println("Unknown command")

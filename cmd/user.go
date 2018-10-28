@@ -26,7 +26,7 @@ const userPlace = "user.txt"
 const cachePlace = "cache.txt"
 
 //legal check, don't implement yet
-func userLegalCheck(userinfo []User,username string, password string,email string ,telphone string) (bool,error){
+func userLegalCheck(userInfo []User,username string, password string,email string ,telphone string) (bool,error){
 	return true,nil
 }
 
@@ -73,9 +73,10 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		//reading file from store place
-		userinfo,userReadingerr := ReadUserFromFile(userPlace)
+		userInfo,userReadingerr := ReadUserFromFile(userPlace)
 		if userReadingerr!=nil {
 			fmt.Println(userReadingerr)
+			return
 		}
 
 		//get flags
@@ -99,17 +100,19 @@ to quickly create a Cobra application.`,
 				case "register":{
 					fmt.Println("register")
 					//legal check for username(unique),password,email,telphone
-					if pass,error := userLegalCheck(userinfo,username,password,email,telphone); pass == false {
+					if pass,err := userLegalCheck(userInfo,username,password,email,telphone); err!=nil{
+						fmt.Println(err)
+						return
+					}else if !pass{
 						fmt.Println("Register Failed")
-						fmt.Println(error)
 						return
 					}
 
 					//if pass legal check, add it to userFile
-					userinfo = append(userinfo,User{username,password,email,telphone})
+					userInfo = append(userInfo,User{username,password,email,telphone})
 					//store the user file into userPlace
-					WriteUserToFile(userPlace,userinfo)
-					fmt.Println("Register success")
+					WriteUserToFile(userPlace,userInfo)
+					fmt.Println("User register success")
 				}
 				case "login":{
 					fmt.Println("user login")
@@ -123,7 +126,7 @@ to quickly create a Cobra application.`,
 					}
 					//validate username and password
 					pass := false
-					for _,user := range userinfo{
+					for _,user := range userInfo{
 						if user.Username == username && user.Password == password{
 							userLogin(user.Username)
 							pass = true
@@ -168,7 +171,7 @@ to quickly create a Cobra application.`,
 					}
 					//if pass validation, give all info from all users
 					fmt.Println("Here is users' info:")
-					for _,user := range userinfo{
+					for _,user := range userInfo{
 						fmt.Println(user.Username,user.Email,user.Telphone)
 					}
 				}
@@ -189,14 +192,14 @@ to quickly create a Cobra application.`,
 						return
 					}
 					//if pass, delete this user and logout
-					for i,user := range userinfo{
+					for i,user := range userInfo{
 						if loginUsername == user.Username{
-							userinfo = append(userinfo[:i],userinfo[i+1:]...)
+							userInfo = append(userInfo[:i],userInfo[i+1:]...)
 							break
 						}
 					}
 					//update the userPlace
-					WriteUserToFile(userPlace,userinfo)
+					WriteUserToFile(userPlace,userInfo)
 				}
 				default:{
 					fmt.Println("Unknown command")

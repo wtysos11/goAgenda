@@ -23,9 +23,11 @@ import (
 const meetingPlace = "meeting.txt"
 
 //legal check, don't implement yet
-func meetingLegalCheck(userinfo []User,username string, password string,email string ,telphone string) (bool,error){
+func meetingLegalCheck(meetingInfo []Meeting,startTime string, endTime string,title string ,participants []string) (bool,error){
 	return true,nil
 }
+
+
 
 // meetingCmd represents the meeting command
 var meetingCmd = &cobra.Command{
@@ -38,6 +40,24 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if login,err:=checklogin(); err!=nil{
+			fmt.Println(err)
+			return
+		} else if !login{
+			fmt.Println("Please login first")
+			return
+		}
+		loginUsername,loginErr := getLoginUsername()
+		if loginErr !=nil {
+			fmt.Println(loginErr)
+			return
+		}
+
+		meetingInfo,meetingReadingerr := ReadMeetingFromFile(meetingPlace)
+		if meetingReadingerr!=nil {
+			fmt.Println(meetingReadingerr)
+			return
+		}
 		fmt.Println("meeting called")
 		startTime,_ := cmd.Flags().GetString("start")
 		endTime,_ := cmd.Flags().GetString("end")
@@ -54,22 +74,126 @@ to quickly create a Cobra application.`,
 			switch (args[0]){
 				case "create":{
 					fmt.Println("create")
+
+					if pass,err := meetingLegalCheck(meetingInfo,startTime,endTime,title,participants); err !=nil {
+						fmt.Println(err)
+						return
+					} else if !pass{
+						fmt.Println("Meeting create failed")
+						return
+					}
+					meetingInfo = append(meetingInfo,Meeting{loginUsername,startTime,endTime,title,participants})
+
+					WriteMeetingToFile(meetingPlace,meetingInfo)
+					fmt.Println("Meeting create success")
 				}
 				case "addUser":{
 					fmt.Println("add user")
+					//check. Need title and at least one valiable participants(username correct and have time to attend)
+
+					//find meeting
+					pass := false
+					for i , meeting := range meetingInfo{
+						if meeting.Title == title{
+							pass = true
+							//check whether participants have time
+
+							meetingInfo[i].UserList = append(meetingInfo[i].UserList,participants...)
+							break
+						}
+					}
+
+					if !pass {
+						fmt.Println("Meeting add users failed.")
+						return
+					}
+					fmt.Println("Meeting add users success")
 				}
 				case "deleteUser":{
 					fmt.Println("delete user")
+					//check. title and participants name
+
+					//find meeting
+					pass := false
+					for i , meeting := range meetingInfo{
+						if meeting.Title == title{ //find the meeting
+							pass = true
+							//check whether participants have time
+
+							//delete participants from this meeting
+							//warning: may have bugs. Not sure
+							for j,user := range meeting.UserList{
+								for k,deleteUser := range participants{
+									if user == deleteUser{
+										meetingInfo[i].UserList = append(meetingInfo[i].UserList[:j],meetingInfo[i].UserList[j+1:]...)
+										participants = append(participants[:k],participants[k+1:]...)
+										break
+									}
+								}
+							}
+							break
+						}
+					}
+
+					if !pass {
+						fmt.Println("Meeting delete users failed.")
+						return
+					}
+					WriteMeetingToFile(meetingPlace,meetingInfo)
+					fmt.Println("Meeting delete users success")
 				}
 				case "lookup":{
 					fmt.Println("meeting lookup")
 				}
 				case "cancel":{
 					fmt.Println("meeting cancel")
+
+					pass := false
+					for i,meeting := range meetingInfo{
+						if meeting.Title == title && meeting.Creator == loginUsername{
+							pass = true
+							meetingInfo = append(meetingInfo[:i],meetingInfo[i+1:]...)
+						} else if meeting.Title == title && meeting.Creator != loginUsername{
+							fmt.Println("You can only cancel the meeting that create by yourself")
+							return
+						}
+					}
+					if !pass{
+						fmt.Println("Meeting cancel failed")
+						return
+					}
+					WriteMeetingToFile(meetingPlace,meetingInfo)
+					fmt.Println("Meeting cancel success")
 				}
 				case "exit":{
-				
 					fmt.Println("meeting exit")
+					//find the specific meeting
+
+					//check whether user join
+					pass := false
+					for i,meeting := range meetingInfo {
+						if meeting.Title == title{
+							//check whether the user in the user list
+							for j,user := range meeting.UserList{
+								if user == loginUsername{
+									pass = true
+									meetingInfo[i].UserList = append(meetingInfo[i].UserList[:j],meetingInfo[i].UserList[j+1:]...)
+									break
+								}
+							}
+
+							break
+						}
+					}
+
+					if !pass {
+						fmt.Println("Meeting Exit failed")
+						return
+					}
+
+					//delete it
+					WriteMeetingToFile(meetingPlace,meetingInfo)
+					fmt.Println("Meeting Exit success")
 				}
 				case "clear":{
 					fmt.Println("meeting clear")

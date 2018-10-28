@@ -3,7 +3,7 @@
 
 ## 文件内容说明
 ### user.txt
-内部以JSON的格式存放着user结构的数据。
+内部以JSON的格式存放着User结构的数据。
 详情见`entity/useroper.go`
 
 ### cache.txt
@@ -11,6 +11,9 @@
 未登录：`logout`
 登录：`username(登录用户的用户名)`
 
+### meeing.txt
+内部以JSON的格式存放着Meeting结构的数据
+详情见`entity/conference.go`
 
 ## 需求
 
@@ -357,3 +360,9 @@ func main() {
 使用`cmd.Flags().StringArray()`可以声明一个flag
 使用`cmd.Flags().GetStringArray()`可以取得这个数组
 对于数组而言只有重复使用标签才能够作为不同元素，比如`-a="ss" -a="tt"`，而同一个标签内都算作是一个字符窜
+
+## 异常
+```go
+if 遇到错误
+    return errors.New("遇到xx错误")
+```

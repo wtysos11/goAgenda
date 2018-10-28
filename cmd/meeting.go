@@ -47,12 +47,10 @@ func userTimeCheck(userInfo []User,meetingInfo []Meeting,startTime AgendaTime, e
 	//for all meetings, if their userlist have participant, check whether this meeting have conflicts.
 	for _,m := range meetingInfo{
 		inMeeting := false
-		var involveParticipant string
 		for _,user := range m.UserList{
 			for _,p := range participants {
 				if user == p{
 					inMeeting = true
-					involveParticipant = p
 					break
 				}
 			}
@@ -63,8 +61,8 @@ func userTimeCheck(userInfo []User,meetingInfo []Meeting,startTime AgendaTime, e
 
 		meetingStartTime,_ := String2Time(m.StartTime)
 		meetingEndTime,_ := String2Time(m.EndTime)
-		if !(CompareTime(endTime,meetingStartTime)<0 && CompareTime(startTime,meetingEndTime)>0){
-			return errors.New("For participants "+involveParticipant+". Meeting "+m.Title+" have conflicts.") 
+		if !(CompareTime(endTime,meetingStartTime)<0 || CompareTime(startTime,meetingEndTime)>0){
+			return errors.New("Can't pass user and time test. Your participants may not have time to attend this meeting.") 
 		}
 	}
 	return nil
@@ -206,6 +204,15 @@ to quickly create a Cobra application.`,
 							sTime,_ = String2Time(m.StartTime)
 							eTime,_ = String2Time(m.EndTime)
 
+							//repeat check
+							for _,user := range m.UserList{
+								for _,p := range participants {
+									if user == p{
+										fmt.Println("Your participants :"+p+" has already attend this meeting. Add failed.")
+										return
+									}
+								}
+							}
 							//check time validation here
 							if timeErr := userAvailableCheck(participants,meetingInfo,sTime,eTime); timeErr!=nil{
 								fmt.Println(timeErr)
@@ -250,7 +257,20 @@ to quickly create a Cobra application.`,
 						meeting := meetingInfo[i]
 						if meeting.Title == title{ //find the meeting
 							pass = true
-							//check whether participants have time
+							//check whether participants in this meeting
+							for _ , p := range participants {
+								ok := false
+								for _ , user := range meeting.UserList{
+									if p == user {
+										ok = true
+										break
+									}
+								}
+								if !ok {
+									fmt.Println("Participants "+p+" not in meeting's userlist.")
+									return
+								}
+							}
 
 							//delete participants from this meeting
 							//warning: may have bugs. Not sure
@@ -424,9 +444,9 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(meetingCmd)
-	meetingCmd.Flags().StringP("start","s","2018-10-28/16:01:23","Help message for start time")
-	meetingCmd.Flags().StringP("end","e","9999-12-31/23:59:59","Help message for end time")
-	meetingCmd.Flags().StringP("title","t","conference","Help message for meeting title")
+	meetingCmd.Flags().StringP("start","s","","Help message for start time")
+	meetingCmd.Flags().StringP("end","e","","Help message for end time")
+	meetingCmd.Flags().StringP("title","t","","Help message for meeting title")
 	meetingCmd.Flags().StringArrayP("participant","p",[]string{},"Help message for participant")
 	// Here you will define your flags and configuration settings.
 

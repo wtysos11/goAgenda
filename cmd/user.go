@@ -227,10 +227,10 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(userCmd)
-	userCmd.Flags().StringP("user","u","Anonymous","Help message for username")
-	userCmd.Flags().StringP("password","p","123456","Help message for password")
-	userCmd.Flags().StringP("email","e","your_email@no.work","Help message for email")
-	userCmd.Flags().StringP("telphone","t","11022223333","Help message for telphone")
+	userCmd.Flags().StringP("user","u","","Help message for username")
+	userCmd.Flags().StringP("password","p","","Help message for password")
+	userCmd.Flags().StringP("email","e","","Help message for email")
+	userCmd.Flags().StringP("telphone","t","","Help message for telphone")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

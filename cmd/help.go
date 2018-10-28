@@ -33,6 +33,7 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		
 		fmt.Println("help called")
+		fmt.Println(args)
 		if(len(args) == 2 && args[0]=="user" && args[1] == "register"){
 			fmt.Println("register here")
 		}else{

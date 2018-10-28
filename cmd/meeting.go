@@ -371,7 +371,6 @@ to quickly create a Cobra application.`,
 									pass = true
 									if(j+1 < len(meetingInfo[i].UserList)){
 										meetingInfo[i].UserList = append(meetingInfo[i].UserList[:j],meetingInfo[i].UserList[j+1:]...)
-										j--
 									} else{
 										meetingInfo[i].UserList = meetingInfo[i].UserList[:j]
 									}
@@ -403,6 +402,18 @@ to quickly create a Cobra application.`,
 				}
 				case "clear":{
 					fmt.Println("meeting clear")
+					for i:=0 ; i < len(meetingInfo) ; i++ {
+						if meetingInfo[i].Creator == loginUsername{
+							if i+1 < len(meetingInfo){
+								meetingInfo = append(meetingInfo[:i],meetingInfo[i+1:]...)
+							} else{
+								meetingInfo = meetingInfo[:i]
+							}
+							i--
+						}
+					}
+					WriteMeetingToFile(meetingPlace,meetingInfo)
+					fmt.Println("Meeting clear success")
 				}
 			}
 		} else{

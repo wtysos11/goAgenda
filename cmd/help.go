@@ -26,37 +26,32 @@ var helpCmd = &cobra.Command{
 	Short: "helo user to do something",
 	Long: `
 
-	1. To add a register: 
-	
-	instruction:	register -u [UserName] -p [Pass] -e [Email] -t [Phone]
-		
-		[Username] register's name
-		[Pass] register's Password
-		[Email] register's email
-		[Phone] register's phone-number
-	
-	2. To remove a register
+	you can use this app to create or remove meetings.Also you must register a user to have the rights to use the functions.
 
-	instruction:	delete
+	Usage:
+		agenda [command]
 
-	(attention: you can delete your account in the database of Agenda)
+	Available Commands:
+		add         To add Participator of the meeting
+		clear       clear all the meeting created by the current user
+		create      To create a new meeting
+		delete      To delete your account in Agenda
+		deleteM     delete meeting with the title [title]
+		help        Help about any command
+		login       Using UserName with PassWord to login Agenda.
+		logout      To logout Agenda
+		queryM      To query all the meeting have attended during [StartTime] and [EndTime]
+		queryU      To query all the users' names
+		quit        quit the meeting with the title [title]
+		register    Register a new user
+		remove      To remove Participator from the meeting
 
-	3. To query user
+	Flags:
+		--config string   config file (default is $HOME/.agenda.yaml)
+		-h, --help            help for agenda
+		-t, --toggle          Help message for toggle
 
-	instruction:	queryU
-
-	(attention: you can query all user's name who has registed)
-
-	4. To login 
-
-	instruction:	login -u [UserName] -p [PassWord]
-
-		[Username] register's name
-		[Pass] register's Password
-
-	5. To logout
-
-	instruction:	logout
+	Use "agenda [command] --help" for more information about a command.
 
 	`,
 	Run: func(cmd *cobra.Command, args []string) {

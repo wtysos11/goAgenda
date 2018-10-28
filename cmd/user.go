@@ -77,13 +77,39 @@ func userLogout() error{
 // userCmd represents the user command
 var userCmd = &cobra.Command{
 	Use:   "user",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "help a user to regist",
+	Long: `
+	1. To add a register: 
+	
+	instruction:	register -u [UserName] -p [Pass] -e [Email] -t [Phone]
+		
+		[Username] register's name
+		[Pass] register's Password
+		[Email] register's email
+		[Phone] register's phone-number
+	
+	2. To remove a register
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	instruction:	delete
+
+	(attention: you can delete your account in the database of Agenda)
+
+	3. To query user
+
+	instruction:	queryU
+
+	(attention: you can query all user's name who has registed)
+
+	4. To login 
+
+	instruction:	login -u [UserName] -p [PassWord]
+
+		[Username] register's name
+		[Pass] register's Password
+
+	5. To logout
+
+	instruction:	logout`,
 	Run: func(cmd *cobra.Command, args []string) {
 		//reading file from store place
 		userInfo,userReadingerr := ReadUserFromFile(userPlace)

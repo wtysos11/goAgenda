@@ -175,10 +175,18 @@ to quickly create a Cobra application.`,
 					fmt.Println("meeting cancel")
 
 					pass := false
-					for i,meeting := range meetingInfo{
+					for i := 0 ; i<len(meetingInfo) ; i++{
+						meeting := meetingInfo[i]
 						if meeting.Title == title && meeting.Creator == loginUsername{
 							pass = true
-							meetingInfo = append(meetingInfo[:i],meetingInfo[i+1:]...)
+							if(i+1<len(meetingInfo)){
+								meetingInfo = append(meetingInfo[:i],meetingInfo[i+1:]...)
+								i--
+							} else{
+								meetingInfo = meetingInfo[:i]
+							}
+							break
+							
 						} else if meeting.Title == title && meeting.Creator != loginUsername{
 							fmt.Println("You can only cancel the meeting that create by yourself")
 							return
@@ -197,13 +205,29 @@ to quickly create a Cobra application.`,
 
 					//check whether user join
 					pass := false
-					for i,meeting := range meetingInfo {
+					for i:=0 ; i < len(meetingInfo) ; i++ {
+						meeting := meetingInfo[i]
 						if meeting.Title == title{
 							//check whether the user in the user list
-							for j,user := range meeting.UserList{
+							for j := 0 ; j < len(meeting.UserList) ; j++ {
+								user := meeting.UserList[j]
 								if user == loginUsername{
 									pass = true
-									meetingInfo[i].UserList = append(meetingInfo[i].UserList[:j],meetingInfo[i].UserList[j+1:]...)
+									if(j+1 < len(meetingInfo[i].UserList)){
+										meetingInfo[i].UserList = append(meetingInfo[i].UserList[:j],meetingInfo[i].UserList[j+1:]...)
+										j--
+									} else{
+										meetingInfo[i].UserList = meetingInfo[i].UserList[:j]
+									}
+									// if UserList is empty, delete the meeting
+									if len(meetingInfo[i].UserList) == 0{
+										if i+1 < len(meetingInfo){
+											meetingInfo = append(meetingInfo[:i],meetingInfo[i+1:]...)
+										} else{
+											meetingInfo = meetingInfo[:i]
+										}
+									}
+
 									break
 								}
 							}

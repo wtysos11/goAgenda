@@ -81,7 +81,7 @@ var userCmd = &cobra.Command{
 	Long: `
 	1. To add a register: 
 	
-	instruction:	register -u [UserName] -p [Pass] -e [Email] -t [Phone]
+	instruction:	user register -u [UserName] -p [Pass] -e [Email] -t [Phone]
 		
 		[Username] register's name
 		[Pass] register's Password
@@ -90,26 +90,26 @@ var userCmd = &cobra.Command{
 	
 	2. To remove a register
 
-	instruction:	delete
+	instruction:	user delete
 
 	(attention: you can delete your account in the database of Agenda)
 
 	3. To query user
 
-	instruction:	queryU
+	instruction:	user lookup
 
 	(attention: you can query all user's name who has registed)
 
 	4. To login 
 
-	instruction:	login -u [UserName] -p [PassWord]
+	instruction:	user login -u [UserName] -p [PassWord]
 
 		[Username] register's name
 		[Pass] register's Password
 
 	5. To logout
 
-	instruction:	logout`,
+	instruction:	user logout`,
 	Run: func(cmd *cobra.Command, args []string) {
 		//reading file from store place
 		userInfo,userReadingerr := ReadUserFromFile(userPlace)

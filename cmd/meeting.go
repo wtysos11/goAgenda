@@ -129,45 +129,47 @@ var meetingCmd = &cobra.Command{
 	Long: ` 
 	1.To add Participator of the meeting: 
 	
-	instruction:	add -p [Participator] -t [Title]
+	instruction:	meeting addUser -p [Participator] -t [Title]
 		
 		[Participator] Participator's name
 		[Title] meeting's name
 
 	(attention:If the Participator cannot attend during the time, add fail.)
+	(PS: There can be multiple -p flags at the same time, but each -p flag only aims at one participator.)
 
 	2. To remove a Participator of the meeting
 
-	instruction:	remove -p [Participator] -t [Title]
+	instruction:	meeting deleteUser -p [Participator] -t [Title]
 
 		[Participator] Participator's name
 		[Title] meeting's name
 
 	3. To create a new meeting:
 	
-	instruction:	create -t [Title] -p [Participator] -s [StartTime] -e [EndTime]
+	instruction:	meeting create -t [Title] -p [Participator] -s [StartTime] -e [EndTime]
 
 		[Title] the Title of the meeting
 		[Participator] the Participator of the meeting,the Participator can only attend one meeting during one meeting time
 		[StartTime] the StartTime of the meeting
 		[EndTime] the EndTime of the meeting 
 
-	4. To delete a meeting:
+	4. To cancel a meeting:
 
-	instruction:    deleteM -t [title]
+	instruction:    meeting cancel -t [title]
 
 		[Title] the Title of the meeting
+	(PS: Only creator of this meeting can cancel it.)
 	
-	5. To query a meeting:
+	5. To query meetings in the specific time for login user:
 
-	instruction:	queryM -s [StartTime] -e [EndTime]
+	instruction:	meeting lookup -s [StartTime] -e [EndTime]
 
 		[StartTime] the StartTime of the meeting
 		[EndTime] the EndTime of the meeting
 
 	6. To quit a meeting:
 
-	instruction:	quit -t [title]
+	instruction:	meeting exit -t [title]
 
 		[Title] the Title of the meeting
 

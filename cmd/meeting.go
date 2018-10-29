@@ -389,7 +389,7 @@ var meetingCmd = &cobra.Command{
 						meetingStartTime,_ := String2Time(m.StartTime)
 						meetingEndTime,_ := String2Time(m.EndTime)
 						if (CompareTime(sTime,meetingStartTime)<0 && CompareTime(meetingStartTime,eTime)<0)||(CompareTime(sTime,meetingEndTime)<0 && CompareTime(meetingEndTime,eTime)<0){
-							fmt.Println("Meeting : "+ m.Title+" will start at  "+m.StartTime+"and end at "+m.EndTime+".")
+							fmt.Println("Meeting : "+ m.Title+" will start at  "+m.StartTime+" and end at "+m.EndTime+".")
 						}
 					}
 				}

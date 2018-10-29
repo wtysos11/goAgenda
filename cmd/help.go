@@ -31,24 +31,8 @@ var helpCmd = &cobra.Command{
 		agenda [command]
 
 	Available Commands:
-		add         To add Participator of the meeting
-		clear       clear all the meeting created by the current user
-		create      To create a new meeting
-		delete      To delete your account in Agenda
-		deleteM     delete meeting with the title [title]
-		help        Help about any command
-		login       Using UserName with PassWord to login Agenda.
-		logout      To logout Agenda
-		queryM      To query all the meeting have attended during [StartTime] and [EndTime]
-		queryU      To query all the users' names
-		quit        quit the meeting with the title [title]
-		register    Register a new user
-		remove      To remove Participator from the meeting
-
-	Flags:
-		--config string   config file (default is $HOME/.agenda.yaml)
-		-h, --help            help for agenda
-		-t, --toggle          Help message for toggle
+		user : commands about user operation
+		meeting : commands about meeting operation
 
 	Use "agenda [command] --help" for more information about a command.
 

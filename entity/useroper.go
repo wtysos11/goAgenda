@@ -3,7 +3,6 @@ package entity
 import(
 	"io/ioutil"
 	"encoding/json"
-	"fmt"
 	"os"
 )
 
@@ -21,13 +20,11 @@ type User struct{
  
 func ReadUserFromFile (filePath string) ([]User,error) {
 	var users []User
-	fmt.Println("In reading user file")
 	str,err := ioutil.ReadFile(filePath)
 	if err!=nil {
 		return users,err
 	}
 	jsonStr := string(str)
-	fmt.Printf("%s\n",jsonStr)
 	
 	json.Unmarshal([]byte(jsonStr),&users)
 	return users,nil

@@ -17,138 +17,206 @@
 
 ## 需求
 
-子命令：help、register、cm
-要求用户信息存储在curUser.txt中，User和Meeting实体要用json进行存储。
-要求实现日志服务
+### 子命令 
 
-### agenda help
+- 大的方向上要实现`help、register、cm`三个子命令
+- 用户信息存储在`curUser.txt`中，`User`和`Meeting`实体要用`json`进行存储
+- 实现日志服务
 
-子命令`agenda help`，可以列出命令说明。此外还要实现`agenda help register`列出regsiter命令的描述
+---
 
-### agenda user
+ ### agenda help
 
-用户相关的子命令
+寻求帮助使用子命令`agenda help`，列出命令说明。此外输入`agenda help register可以`列出regsiter命令的描述
 
-相关参数：
-1. --username/-u，用户名
-2. -password/-p，密码
-3. -email/-e，邮箱
-4. -telphone/-t，电话
+---
 
-#### agenda user register
+### agenda user register
 
-子命令`agenda user register`，注册用户
-接受四个参数（必选）：
-1. --username/-u，用户名
-2. -password/-p，密码
-3. -email/-e，邮箱
-4. -telphone/-t，电话
+用户注册使用命令`agenda user register`
 
-此外用户名是唯一的，要查重。
-邮箱、电话要检查有效性。
+改指令可接受四个参数（必选）：
 
-反馈：
-* 如果登记成功，要返回成功注册的信息
-* 如果登记失败，要反馈错误信息（哪里错了，等等）
+- --username/-u，用户名
+- --password/-p，密码
+- --email/-e，邮箱
+- --telphone/-t，电话
 
-#### agenda user login
+**注**：
 
-子命令`agenda user login`，用户登录
-1. --username/-u，用户名
-2. -password/-p，密码
+- 此外用户名是唯一的，要查重。
+- 邮箱、电话要检查有效性。
 
-这两个参数为必须
-反馈：
-* 用户名与密码都正确的时候返回一个成功登录的信息
-* 登录失败，返回登录失败的信息
+**反馈**：
 
-#### agenda user logout
+- 如果登记成功，返回成功注册的信息
+- 如果登记失败，反馈错误信息
 
-子命令`agenda user logout`，用户登出
-登出后只能够使用用户注册和用户登录功能
+---
 
-不接受参数
-反馈：
-* 反馈登出信息
+### agenda user login
 
-#### agenda user lookup
+用户登录使用子命令`agenda user login`
 
-子命令`agenda user lookup`，在创建的用户中查找用户
+- --username/-u，用户名
+- --password/-p，密码
+
+**注**：
+
+- **用户名**与**密码**这两个参数为必须
+
+**反馈**：
+
+- 用户名与密码都正确的时候返回一个成功登录的信息
+- 登录失败，返回登录失败的信息
+
+---
+
+### agenda user logout
+
+用户**登出**使用子命令`agenda user logout`
+
+**注**：
+
+用户登出后只能够使用用户注册和用户登录功能且这里命令**不接受参数**
+
+**反馈**：
+
+- 反馈登出信息
+
+---
+
+### agenda user lookup
+
+在创建的用户中查找某用户使用子命令`agenda user lookup`
+
+**注:**
+
 只有在已经登录的状态才可以使用
-反馈：
-* 如果找到用户，返回已注册的所有用户的用户名、邮箱以及电话信息（打表）
 
-#### agenda user delete
+**反馈**：
 
-子命令`agenda user delete`，删除用户
-操作为删除自己的账号，自动注销
+- 如果找到用户，返回已注册的所有用户的用户名、邮箱以及电话信息（打表）
 
-反馈:
-* 返回成功注销的信息
-* 失败要返回注销失败（有什么情况会导致注销失败吗？）
+---
 
-用户账号删除之后：
-1. 以该用户为发起者的会议将会被删除
-2. 以该用户为参与者的会议将会从参与者列表中移除该用户。如果此操作造成参与者数量为0，则会议也会被移除。
+### agenda user delete
 
-#### agenda meeting create
+删除用户使用子命令`agenda user delete`
 
-子命令`agenda meeting create`，创建会议
-参数：
-1. --start/-s，开始时间，格式为(YYYY-MM-DD/HH:mm:ss)
-2. --end/-e，结束时间
-3. --title/-t，会议主题
-4. --participant/-p,会议参与者
+**注**：
 
-反馈：
-* 成功则返回适当信息
-* 失败也返回相关信息
+- 操作为删除自己的账号，自动注销
+- 用户账号删除之后：
+  - 以该用户为发起者的会议将会被删除
+  - 以该用户为参与者的会议将会从参与者列表中移除该用户。如果此操作造成参与者数量为0，则会议也会被移除。
 
-注意：用户无法分身参与多个狐疑，如果用户已有的会议安排与将要创建的会议在时间上有重叠，则会无法创建这个会议。
-会议主题是唯一的。
+**反馈**:
 
-#### agenda meeting addUser
+- 返回成功注销的信息
+- 失败要返回注销失败（有什么情况会导致注销失败吗？）
 
-添加会议参与者
-参数：
-1. --title/-t，会议主题
-2. --participants/-p，要添加的用户名（可以为多个）
+---
 
-反馈：
-* 成功返回相关信息
-* 失败也返回相关信息
+### agenda meeting create
 
-#### agenda meeting deleteUser
+创建会议使用子命令`agenda meeting create`
 
-删除会议参与者
-同上
+**参数：**
+
+- --start/-s，开始时间，格式为(YYYY-MM-DD/HH:mm:ss)
+- --end/-e，结束时间
+- --title/-t，会议主题
+- --participant/-p,会议参与者
+
+**注：**
+
+- 用户无法分身参与多个狐疑，如果用户已有的会议安排与将要创建的会议在时间上有重叠，则会无法创建这个会议。
+- 会议主题是唯一的。
+
+**反馈：**
+
+- 成功返回创建成功提示信息
+- 失败返回创建失败相关信息
+
+---
+
+### agenda meeting addUser
+
+ 添加会议参与者使用子命令`meeting addUser -p [Participator] -t [Title] `
+
+**参数：**
+
+- --title/-t，会议主题
+- --participants/-p，要添加的用户名（可以为多个）
+
+**反馈：**
+
+- 成功返回相关信息
+- 失败也返回相关信息
+
+----
+
+### agenda meeting deleteUser
+
+删除会议参与者使用子命令`meeting deleteUser -p [Participator] -t [Title]` 
+
+**参数：**
+
+- --title/-t，会议主题
+- --participants/-p，要添加的用户名（可以为多个）
+
+**反馈：**
+
+- 成功返回相关信息
+- 失败也返回相关信息
+
+----
 
 ### agenda meeting lookup
 
-查找会议，仅登录可用
-参数：
-1. --start/-s，开始时间
-2. --end/-e，结束时间
+查找会议(仅登录可用)使用子命令`meeting lookup -s [StartTime] -e [EndTime] `
 
-已登录的用户可以查询自己的议程在某一时间段内的所有会议安排
+**参数：**
 
-#### agenda meeting cancel
+- --start/-s，开始时间
+- --end/-e，结束时间
 
-取消会议，已经登录的用户可以取消自己发起的某一会议安排
-参数：
-1. --title/-t，会议主题
+**注：**
 
-#### agenda meeting exit
+- 已登录的用户可以查询自己的议程在某一时间段内的所有会议安排
 
-退出会议，已经登录的用户可以退出自己参与的某一会议安排
-参数：
-1. --title/-t，会议主题
+----
 
-如果此操作造成会议参与者人数为0，则会议将会被删除
+### agenda meeting cancel
 
-#### agenda meeting clear
+取消会议(已经登录的用户可以取消自己发起的某一会议安排)使用子命令` meeting cancel -t [title] `
 
-清空会议，已经登录的用户可以清空自己发起的所有会议安排
+**参数：**
+
+- --title/-t，会议主题
+
+----
+
+### agenda meeting exit
+
+退出会议(已经登录的用户可以退出自己参与的某一会议安排)使用子命令`meeting exit -t [title] `
+
+**参数：**
+
+- --title/-t，会议主题
+
+ 
+
+**注：**
+
+- 如果此操作造成会议参与者人数为0，则会议将会被删除
+
+----
+
+### agenda meeting clear
+
+清空会议(已经登录的用户可以清空自己发起的所有会议安排)使用子命令`clear `
 
 ## 结构定义
 

@@ -27,14 +27,14 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "cobratest",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use:   "agenda",
+	Short: "Agenda is a CLI application for managing the infomation of users and schedule of meetings",
+	Long: `
+	This application is build on the cobra library which allows the client to manage the schedule of different 
+	meetings as well as the infomation of participants and sponsors.
+	To get a detailed usage of command and flags,please input 
+	'agenda help user' or 'agenda help meeting' 
+	`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
@@ -55,7 +55,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobratest.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.agenda.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -75,9 +75,9 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".cobratest" (without extension).
+		// Search config in home directory with name ".agenda" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".cobratest")
+		viper.SetConfigName(".agenda")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match

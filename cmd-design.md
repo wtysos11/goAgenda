@@ -19,7 +19,7 @@
 
 ### 子命令 
 
-- 大的方向上要实现`help、register、cm`三个子命令
+- 大的方向上要实现`help、user、meeting`三个子命令
 - 用户信息存储在`curUser.txt`中，`User`和`Meeting`实体要用`json`进行存储
 - 实现日志服务
 
@@ -206,7 +206,7 @@
 
 - --title/-t，会议主题
 
- 
+
 
 **注：**
 

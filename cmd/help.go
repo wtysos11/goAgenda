@@ -22,7 +22,7 @@ import (
 
 var helpCmd = &cobra.Command{
 	Use:   "help",
-	Short: "helo user to do something",
+	Short: "help user to do something",
 	Long: `
 
 	you can use this app to create or remove meetings.Also you must register a user to have the rights to use the functions.
@@ -44,7 +44,7 @@ var helpCmd = &cobra.Command{
 					fmt.Println(`
 Command : user register
 Function: Registe a user.
-instruction: user register --username/-u [UserName] --password/-p [Pass] --email/-e [Email] --telphone/-t [Phone]
+instruction: user register --username/-u [UserName] --password/-p [Pass] --email/-e [Email] --telephone/-t [Phone]
 Args :
 	[Username] 	register's name
 	[Pass] 		register's Password

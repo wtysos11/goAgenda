@@ -35,9 +35,17 @@ func ReadMeetingFromFile (filePath string) ([]Meeting,error) {
 		return conference,err
 	}
 	jsonStr := string(str)
-	fmt.Printf("%s\n",jsonStr)
+    // fmt.Printf("%s\n",jsonStr)
 	
-	json.Unmarshal([]byte(jsonStr),&conference)
+    json.Unmarshal([]byte(jsonStr),&conference)
+    fmt.Println("Creator StartTime EndTime Title UserList")
+    for _,m := range conference{
+        fmt.Print(m.Creator+" "+m.StartTime+" "+m.EndTime+" "+m.Title+" ")
+        for _,n := range m.UserList{
+            fmt.Printf(n+" ")
+        }
+        fmt.Println()
+    }
 	return conference,nil
 }
 
